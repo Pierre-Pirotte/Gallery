@@ -1,0 +1,137 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Galerie d'Art{% endblock %}
+
+{% block body %}
+{# Carousel avec 5 cartes fixes au centre #}
+<div class="container-fluid bg-light py-3">
+    <div class="container" style="max-width: 50%;">
+        <div class="position-relative">
+            <div id="carouselContainer" class="row g-3 justify-content-center">
+                <div class="col" id="card-0"></div>
+                <div class="col" id="card-1"></div>
+                <div class="col" id="card-2"></div>
+                <div class="col" id="card-3"></div>
+                <div class="col" id="card-4"></div>
+            </div>
+            
+            <button id="prevBtn" class="btn btn-outline-secondary position-absolute top-50 start-0 translate-middle-y" style="z-index: 10; width: 40px; height: 40px; margin-left: -60px; border-width: 2px;">
+                ‹
+            </button>
+            <button id="nextBtn" class="btn btn-outline-secondary position-absolute top-50 end-0 translate-middle-y" style="z-index: 10; width: 40px; height: 40px; margin-right: -60px; border-width: 2px;">
+                ›
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function initCarousel() {
+    const paintings = [
+        {% for painting in featuredPaintings %}
+        {
+            title: {{ painting.title|json_encode|raw }},
+            author: {{ painting.author|json_encode|raw }},
+            image: {{ painting.image|json_encode|raw }},
+            slug: {{ painting.slug|json_encode|raw }}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
+    
+    let currentIndex = 0;
+    
+    function createCard(painting) {
+        return `
+        <a href="/tableau/${painting.slug}"
+            class ="text-decoration-none"
+            style="cursor: pointer;">
+            <div class="card shadow-sm h-100">
+                <img src="{{ asset('images/paintings/') }}${painting.image}" 
+                     class="card-img-top" 
+                     alt="${painting.title}"
+                     style="height: 100px; width: 100%; object-fit: cover;">
+                <div class="card-body text-center p-2">
+                    <h6 class="card-title mb-1" style="font-size: 0.85rem;">${painting.title}</h6>
+                    <p class="card-text mb-0">
+                        <small class="text-muted">${painting.author}</small>
+                    </p>
+                </div>
+            </div>
+        </a>
+        `;
+    }
+    
+    function updateCards(direction = 'none') {
+        for (let i = 0; i < 5; i++) {
+            const cardElement = document.getElementById(`card-${i}`);
+            if (cardElement) {
+                const paintingIndex = (currentIndex + i + paintings.length) % paintings.length;
+                cardElement.innerHTML = createCard(paintings[paintingIndex]);
+            }
+        }
+    }
+    
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    
+    if (nextBtn && prevBtn) {
+        nextBtn.addEventListener('click', function() {
+            currentIndex = (currentIndex + 1) % paintings.length;
+            updateCards('next');
+        });
+        
+        prevBtn.addEventListener('click', function() {
+            currentIndex = (currentIndex - 1 + paintings.length) % paintings.length;
+            updateCards('prev');
+        });
+        
+        // Initialisation
+        updateCards('none');
+    }
+}
+
+// Support pour Turbo (Symfony UX)
+document.addEventListener('turbo:load', initCarousel);
+// Fallback pour navigation classique
+document.addEventListener('DOMContentLoaded', initCarousel);
+</script>
+
+<div class="container my-5">
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <h1 class="mb-4">Bienvenue dans notre Galerie d'Art</h1>
+            <p class="lead">
+                Découvrez une collection d'œuvres d'art exceptionnelles. 
+                Notre galerie vous invite à explorer et apprécier des créations uniques.
+            </p>
+        </div>
+        <div class="col-md-6">
+            <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="height: 300px;">
+                <span class="text-white fs-1">🎨</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Œuvre la mieux notée</h2>
+        </div>
+        <div class="col-md-6 mx-auto">
+            <div class="card">
+                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <span class="fs-1">🖼️</span>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Titre de l'Œuvre</h5>
+                    <p class="card-text"><strong>Artiste :</strong> Nom de l'artiste</p>
+                    <p class="card-text"><strong>Année :</strong> 2024</p>
+                    <p class="card-text">
+                        Description de l'œuvre. Cette peinture représente...
+                    </p>
+                    <a href="#" class="btn btn-primary">Voir les détails</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

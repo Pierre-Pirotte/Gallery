@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ painting.title }}{% endblock %}
+{% block body %}
+<div class="container my-5">
+    <a href="{{ path('app_gallery') }}" class="btn btn-outline-dark btn-sm mb-4">← Retour à la galerie</a>
+    
+    <div class="row">
+        <div class="col-lg-7 mb-4">
+            <img src="{{ asset('images/paintings/' ~ painting.image) }}" 
+                 class="img-fluid rounded shadow-lg" 
+                 alt="{{ painting.title }}"
+                 style="width: 100%; max-height: 700px; object-fit: contain;">
+        </div>
+        
+        <div class="col-lg-5">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-dark text-white">
+                    <h3 class="mb-0">{{ painting.title }}</h3>
+                </div>
+                <div class="card-body">
+                    <h5 class="text-muted mb-4">{{ painting.author }}</h5>
+                    
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Année :</dt>
+                        <dd class="col-sm-8">{{ painting.created|date('Y') }}</dd>
+                        
+                        <dt class="col-sm-4">Style :</dt>
+                        <dd class="col-sm-8">{{ painting.technical }}</dd>
+                        
+                        <dt class="col-sm-4">Dimensions :</dt>
+                        <dd class="col-sm-8">{{ painting.height }} * {{ painting.width }} cm</dd>
+                        
+                        <dt class="col-sm-12 mt-3 mb-2">Description :</dt>
+                        <dd class="col-sm-12 text-muted">{{ painting.description }}</dd>
+
+                        <dt class="col-sm-4">Note moyenne :</dt>
+                        <dd class="col-sm-8">
+                            {% if moyenneRating %}
+                                <span class="">{{ moyenneRating }}/10</span>
+                                <small class="text-muted">(sur {{ comments|length }} avis)</small>
+                            {% else %}
+                                <span class="text-muted">Aucune note</span>
+                            {% endif %}
+                        </dd>
+
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-lg-10 offset-lg-1">
+
+            <div class="mb-4">
+                {% if app.user %}
+                    <button class="btn btn-dark btn-lg" type="button" data-bs-toggle="collapse" data-bs-target="#commentForm">
+                        Noter ou commenter l'oeuvre!
+                    </button>
+                {% else %}
+                    <a href="{{ path('app_login')}}" class="btn btn-dark btn-lg">
+                        Connectez-vous pour noter ou commenter
+                    </a>
+                {% endif %}    
+            </div>
+
+            {% if app.user %}
+            <div class="collapse mb-5" id="commentForm">
+                <div class="card-shadow-sm">
+                    
+                    <div class="card-body">
+                        {{ form_start(commentForm)}}
+
+                            {% if not commentForm.vars.valid %}
+                                <div class="alert alert-danger">
+                                    {{ form_errors(commentForm)}}
+                                </div>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                {{ form_label(commentForm.rating, 'Votre note de 1 à 10', {'label_attr': {'class': 'form-label fw-bold'}})}}
+                                {{ form_widget(commentForm.rating, {'attr': {'class': 'form-control', 'placeholder': 'De 1 à 10'}})}}
+                                {{ form_errors(commentForm.rating)}}
+                            </div>
+                            <div class="mb-3">
+                                {{ form_label(commentForm.content, 'votre commentaire', {'label_attr': {'class': 'form-label fw-bold'}})}}
+                                {{ form_widget(commentForm.content, {'attr': {'class': 'form-control', 'rows': 4, 'placeholder': 'Partagez votre avis ...'}} )}}
+                                {{ form_errors(commentForm.content)}}
+                                <small class="text-muted">Maximum 1000 caractères</small>
+                            </div>
+                            <div class="">
+                                <button type="submit" class="btn btn-dark">Publier mon avis</button>
+                            </div>
+                        {{ form_end(commentForm)}}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="mt-5">
+                <h4 class="mb-4">
+                    Commentaires des utilisateurs:
+                    <span class="">{{ comments|length }}</span>
+                </h4>
+                {% if comments|length > 0 %}
+                    {% for comment in comments %}
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justity-centent-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-0 fw-bold">{{ comment.user.pseudo }}</h6>
+                                    <small class="text-muted">
+                                        {{ comment.createdAt|date('d/m/Y à H:i')}}
+                                        {% if comment.editedAt %}
+                                            <span class="fst-italic">modifié le {{ comment.editedAt|date('d/m/Y à H:i')}}</span>
+                                        {% endif %}
+                                    </small>
+                                </div>
+                                {% if comment.rating %}
+                                    <span class="">a donné la note de {{ comment.rating }}/10</span>
+                                {% endif %}
+                            </div>
+
+                            {% if comment.content %}
+                                <p class="mb-0 mt-2">"{{ comment.content}}"</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-secondary text-center">
+                        Aucun avis pour le moment, soyez le premier à donner le votre!
+                    </div>
+                {% endif %}
+            </div>
+        
+        </div>
+    </div>
+</div>
+{% endblock %}

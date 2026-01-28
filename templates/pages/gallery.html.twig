@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+{% block title %}Gallery{% endblock %}
+{% block body %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Notre Galerie</h1>
+    <div class="row g-4">
+        {% for painting in paintings %}
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm">
+                <img src="{{ asset('images/paintings/' ~ painting.image) }}" class="card-img-top" alt="{{ painting.title }}" style="height: 250px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ painting.title }}</h5>
+                    <p class="card-text">
+                        <small class="text-muted">
+                            <strong>{{ painting.author}} {{ painting.created|date('Y') }}</strong><br>
+                            {{ painting.technical }}
+                        </small>
+                    </p>
+                    <a href="{{ path('app_tableau_details', {slug: painting.slug}) }}" class="btn btn-outline-dark btn-sm">Voir l'œuvre en détail</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

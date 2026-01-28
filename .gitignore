@@ -18,3 +18,16 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+###> IDE et éditeurs ###
+/.vscode/
+/.idea/
+*.swp
+*.swo
+*~
+###< IDE et éditeurs ###
+
+###> Fichiers système ###
+.DS_Store
+Thumbs.db
+###< Fichiers système ###
