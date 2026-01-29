@@ -4,8 +4,11 @@ namespace App\Entity;
 
 use App\Repository\PaintingRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: PaintingRepository::class)]
+#[Vich\Uploadable]
 class Painting
 {
     #[ORM\Id]
@@ -34,11 +37,20 @@ class Painting
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
+    #[Vich\UploadableField(mapping: 'paintings_images', fileNameProperty: 'image')]
+    private ?File $imageFile = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
     #[ORM\Column(length: 100)]
     private ?string $technical = null;
 
     #[ORM\Column(length: 255, unique: true)]
     private ?string $slug = null;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => true])]
+    private ?bool $isVisible = true;
 
     public function getId(): ?int
     {
@@ -129,6 +141,22 @@ class Painting
         return $this;
     }
 
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+
+        if (null !== $imageFile) {
+            // Mettre à jour updatedAt pour forcer la mise à jour Doctrine
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+
     public function getTechnical(): ?string
     {
         return $this->technical;
@@ -150,5 +178,27 @@ class Painting
     {
     $this->slug = $slug;
     return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    public function isVisible(): ?bool
+    {
+        return $this->isVisible;
+    }
+
+    public function setIsVisible(bool $isVisible): static
+    {
+        $this->isVisible = $isVisible;
+        return $this;
     }
 }
