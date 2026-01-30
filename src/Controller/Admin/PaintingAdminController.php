@@ -17,6 +17,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[IsGranted('ROLE_ADMIN')]
 class PaintingAdminController extends AbstractController
 {
+    // méthode d'affichage
     #[Route('', name: 'index')]
     public function index(PaintingRepository $paintingRepository): Response
     {
@@ -26,6 +27,7 @@ class PaintingAdminController extends AbstractController
         ]);
     }
 
+    // méthode d'ajout
     #[Route('/new', name: 'new')]
     public function newPainting(Request $request, EntityManagerInterface $em, SluggerInterface $slugger):Response
     {
@@ -54,9 +56,76 @@ class PaintingAdminController extends AbstractController
             return $this->redirectToRoute('admin_painting_index');
         }
 
-        return $this->render('admin/painting/newPainting.html.twig', ['form' => $form->createView()]);
+        return $this->render('admin/painting/newPainting.html.twig', [
+            'form' => $form,
+        ]);
 
+    }
+
+    // méthode pour la visibilité on/off
+    #[Route('/{id}/toggle', name: 'toggle', methods: ['GET'])]
+    public function toggleVisibility(Painting $painting, EntityManagerInterface $em):Response 
+    {
+        $painting->setIsVisible(!$painting->isVisible());
+        $em->flush();
+
+        $status = $painting->isVisible() ? 'visible' : 'masqué';
+        $this->addFlash('success', 'Le tableau "'. $painting->getTitle().'" est maintenant ' .$status. '.');
+
+        return $this->redirectToRoute('admin_painting_index');
+    }
+
+    // méthode de modification
+    #[Route('/{id}/edit', name: 'edit')]
+    public function edit(Painting $painting, Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    {
+     // créer formulaire
+        $form = $this->createForm(PaintingType::class, $painting, ['is_edit' => true]);
+
+        // soumission
+        $form->handleRequest($request);
         
+        if ($form->isSubmitted() && $form->isValid()) {
+            // generation du slug
+            $slug = $slugger->slug($painting->getTitle())->lower();
+            $painting->setSlug($slug);
+            
+            // Mise à jour du timestamp pour VichUploader si l'image a changé
+            if ($painting->getImageFile() !== null) {
+                $painting->setUpdatedAt(new \DateTimeImmutable());
+            }
+        
+            // sauvegarde en base, pas besoin de persist pour modification
+            $em->flush();
+
+            // message de succès
+            $this->addFlash('success', 'Le tableau "'.$painting->getTitle(). '"a été mis à jour avec succès!');
+
+            // redirection 
+            return $this->redirectToRoute('admin_painting_index');
+        }
+
+        return $this->render('admin/painting/editPainting.html.twig', [
+            'form' => $form,
+            'painting' => $painting,
+        ]);   
+    }
+
+    // méthode de suppression -> 'POST' empeche les suppressions accidentelles via URL
+    #[Route('/{id}/delete', name: 'delete', methods: ['POST'])]
+    public function delete(Painting $painting, Request $request, EntityManagerInterface $em): Response
+    {
+        // token CSRF
+        if ($this->isCsrfTokenValid('delete'.$painting->getId(), $request->request->get('_token'))) {
+            $title = $painting->getTitle();
+            $em->remove($painting);
+            $em->flush();
+            $this->addFlash('success', 'Le tableau "'.$title. '"a été supprimé avec succès!');
+        
+        } else {
+            $this->addFlash('error', 'token CSRF invalide.');
+        }
+        return $this->redirectToRoute('admin_painting_index');
     }
 }
 

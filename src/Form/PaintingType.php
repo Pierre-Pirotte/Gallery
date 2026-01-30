@@ -13,11 +13,14 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Contracts\Service\Attribute\Required;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class PaintingType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $isEdit = $options['is_edit'];
+        
         $builder
             ->add('title', TextType::class, [
                 'label' => 'Nom du tableau :',
@@ -37,6 +40,8 @@ class PaintingType extends AbstractType
             ->add('created', DateType::class, [
                 'widget' => 'single_text',
                 'label' => 'Date de création :',
+                'required' => false,
+                'empty_data' => null,
                 'attr' => ['max'=> (new \DateTime())->format('Y-m-d')]
             ])
 
@@ -70,12 +75,17 @@ class PaintingType extends AbstractType
             ])
 
             ->add('imageFile', VichFileType::class, [
-                'required' => false,
+                'required' => !$isEdit,
                 'label' => 'Image du tableau :',
-                'allow_delete' => true,
+                'allow_delete' => false,
                 'download_uri' => false,
                 'attr' => ['accept' => 'image/jpeg,image/png,image/webp'],
-                'help' => 'Formats acceptés : JPG, PNG, WEBP (max 5Mo)'
+                'help' => $isEdit 
+                    ? 'Formats acceptés : JPG, PNG, WEBP (max 5Mo). Laissez vide pour garder l\'image actuelle.' 
+                    : 'Formats acceptés : JPG, PNG, WEBP (max 5Mo)',
+                'constraints' => !$isEdit ? [
+                    new Assert\NotNull(message: 'L\'image du tableau est obligatoire.')
+                ] : []
                 ])
 
             ->add('isVisible', CheckboxType::class, [
@@ -90,6 +100,7 @@ class PaintingType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Painting::class,
+            'is_edit' => false, // Par défaut, mode création
         ]);
     }
 }

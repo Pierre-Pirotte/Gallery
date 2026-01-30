@@ -12,7 +12,12 @@ final class PagesController extends AbstractController
     #[Route('/gallery', name: 'app_gallery')]
     public function gallery(PaintingRepository $repository): Response
     {
-        $paintings = $repository->findAll();
+        // cache les tableaux masqués pour les non-admins
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $paintings = $repository->findAll();
+        } else {
+            $paintings = $repository->findBy(['isVisible' => true]);
+        }
         return $this->render('pages/gallery.html.twig', [
             'paintings' => $paintings
         ]);

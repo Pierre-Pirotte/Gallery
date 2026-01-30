@@ -1,10 +1,85 @@
 {% extends 'admin/base.html.twig' %}
 
 {% block body %}
-    <section class="row">
-        <div class="col-md-9 offset-1">
-            <h3 class="display-6 my-4">Gestion des tableaux :</h3>
-            <a href="{{path('admin_painting_new')}}" class="btn btn-outline-dark">Ajouter un nouveau tableau</a>
+    <section class="container-fluid my-4">
+        <div class="row">
+            <div class="col-12">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="display-6">Gestion des tableaux :</h3>
+                    <a href="{{path('admin_painting_new')}}" class="btn btn-outline-dark">Ajouter un nouveau tableau
+                    </a>
+                </div>
+
+                <p class="text-muted mt-3">
+                    <i class="bi bi-info-circle"></i>
+                    Total : {{ paintings|length }} tableaux 
+                </p>
+
+                {% if paintings is empty %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        Aucun tableau n'est disponible
+                    </div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Titre</th>
+                                    <th>Auteur</th>
+                                    <th class="text-center">Visibilité</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for painting in paintings %}
+                                    <tr>
+                                        <td>
+                                            {% if painting.image %}
+                                                <img src="{{ asset('images/paintings/' ~ painting.image)}}" alt="{{ painting.title }}" style="width: 50px; height: 50px; object-fit: cover;">
+                                            {% else %}
+                                                <span class="text-muted">Aucune</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                        {{ painting.title }}
+                                        <a href="{{ path('app_tableau_details', {slug: painting.slug}) }}" class="btn btn-sm btn-outline-info ms-2" target="_blank">Voir
+                                        </a>
+                                        </td>
+                                        <td>{{ painting.author }}</td>
+                                        <td class="text-center">
+                                            {% if painting.isVisible %}
+                                                <span class="badge bg-success">Visible</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Masqué</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ path('admin_painting_edit', {id: painting.id})}}" class="btn btn-sm btn-warning" title="Modifier">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a href="{{ path('admin_painting_toggle', {id: painting.id}) }}" class="btn btn-sm {% if painting.isVisible %}btn-secondary{% else %}btn-success{% endif %}" title="{% if painting.isVisible %}Masquer{% else %}Afficher{% endif %}">
+                                                    <i class="bi bi-eye{% if not painting.isVisible %}-slash{% endif %}"></i>
+                                                </a>
+                                                
+                                                <form method="post" action="{{ path('admin_painting_delete', {id: painting.id}) }}" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer le tableau « {{ painting.title }} » ?');">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ painting.id) }}">
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="Supprimer">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </section>
 {% endblock %}

@@ -48,6 +48,9 @@ class Comment
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $editedAt = null;
 
+    #[ORM\Column(options: ['default' => true])]
+    private ?bool $isVisible = true;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -121,6 +124,18 @@ class Comment
     public function setEditedAt(?\DateTimeImmutable $editedAt): static
     {
         $this->editedAt = $editedAt;
+
+        return $this;
+    }
+
+    public function isVisible(): ?bool
+    {
+        return $this->isVisible;
+    }
+
+    public function setIsVisible(bool $isVisible): static
+    {
+        $this->isVisible = $isVisible;
 
         return $this;
     }

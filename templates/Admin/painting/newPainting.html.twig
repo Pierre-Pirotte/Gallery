@@ -6,9 +6,21 @@
     <a href="{{path('admin_painting_index')}}" class="btn btn-outline-dark">Retour</a>
     <h3 class="display-6 my-4">Ajout d'un nouveau tableau :</h3>
 
-{{ form_start(form) }}
-{{ form_widget(form) }}
-    <input type="submit" value="Ajouter" class="btn btn-outline-dark">
-{{ form_end(form) }}
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}, 'method': 'POST'}) }}
+        
+        {{ form_errors(form) }}
+
+            {{ form_row(form.title) }}
+            {{ form_row(form.author) }}
+            {{ form_row(form.description) }}
+            {{ form_row(form.created) }}
+            {{ form_row(form.height) }}
+            {{ form_row(form.width) }}
+            {{ form_row(form.technical) }}
+            {{ form_row(form.imageFile) }}
+            {{ form_row(form.isVisible) }}
+
+        <input type="submit" value="Ajouter" class="btn btn-outline-dark">
+    {{ form_end(form) }}
 
 {% endblock %}

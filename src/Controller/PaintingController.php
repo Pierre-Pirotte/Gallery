@@ -29,6 +29,9 @@ final class PaintingController extends AbstractController
         if (!$painting) {
             throw $this->createNotFoundException('tableau introuvable');
         }
+        if (!$painting->isVisible() && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createNotFoundException('Ce tableau n\'est pas disponible');
+        }
 
         // recupeartion des commentaires du tableau
         $comments = $commentRepository->findBy(
