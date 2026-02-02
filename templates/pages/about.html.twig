@@ -1,7 +1,17 @@
 {% extends 'base.html.twig' %}
 {% block title %}About{% endblock %}
 {% block body %}
-<div class="container my-5">
-    <h1>About</h1>
+<div class="container-fluid my-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="display-5 mb-4 text-center">A propos</h1>
+            <p class="lead fs-5 px-5 mx-auto" style="max-width: 1200px;">
+                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quidem dolor deleniti laudantium repellat ullam quod architecto esse. Facilis optio, repudiandae deserunt vero, impedit eum vel praesentium eveniet alias quibusdam sit debitis a blanditiis ut officia. Iure quae magnam nostrum fugit ea maiores minima consequatur commodi quaerat reiciendis aut voluptatibus dolore sed optio voluptates, qui sapiente quod magni, adipisci atque enim. Magnam amet accusantium numquam magni quia ea! Sunt excepturi odit quam, quaerat eligendi esse expedita illum totam quae eius provident nesciunt nemo corrupti architecto fugit voluptatum! Eveniet, deserunt atque ratione eos aliquam, nam explicabo maiores labore commodi reprehenderit aliquid provident numquam corporis quisquam eius omnis vitae itaque maxime error repellendus delectus nemo odit. Perferendis voluptatum, ab incidunt consequuntur optio porro possimus deleniti quaerat fuga, vitae pariatur a magnam. Nobis eligendi, ab illo molestias voluptas numquam quia. Doloremque nobis asperiores neque exercitationem doloribus, similique, earum qui voluptas itaque quibusdam nisi tempore nesciunt natus amet impedit saepe ea explicabo. Quo enim, asperiores fugit quia quidem delectus?
+            </p>
+            <div class="text-center mt-4">
+                <a href="{{ path('app_contact') }}" class="btn btn-outline-dark">Nous contacter</a>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

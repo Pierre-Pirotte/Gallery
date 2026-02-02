@@ -16,6 +16,29 @@ class PaintingRepository extends ServiceEntityRepository
         parent::__construct($registry, Painting::class);
     }
 
+    // fonction de recherche
+
+    public function searchPaintings(?string $search, array $tri): array
+    {
+        $result = $this->createQueryBuilder('p');
+
+        // Liste blanche des colonnes autorisées
+        $allowedColumns = ['isVisible', 'category', 'technical'];
+
+        foreach ($tri as $key => $value) {
+            if (in_array($key, $allowedColumns, true)) {
+                $result->andWhere("p.$key = :$key")
+                        ->setParameter($key, $value);
+            }
+        }
+        
+        if ($search) {
+            $result->andWhere('p.title LIKE :search OR p.author LIKE :search')
+                    ->setParameter('search', '%' . $search . '%');
+        }
+        return $result->getQuery()->getResult();
+    }
+
     //    /**
     //     * @return Painting[] Returns an array of Painting objects
     //     */

@@ -33,9 +33,9 @@ final class PaintingController extends AbstractController
             throw $this->createNotFoundException('Ce tableau n\'est pas disponible');
         }
 
-        // recupeartion des commentaires du tableau
+        // recupeartion des commentaires du tableau (uniquement ceux qui sont visibles)
         $comments = $commentRepository->findBy(
-            ['painting' => $painting],
+            ['painting' => $painting, 'isVisible' => true],
             ['createdAt' => 'DESC']
         );
 

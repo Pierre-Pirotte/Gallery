@@ -2,7 +2,56 @@
 {% block title %}Gallery{% endblock %}
 {% block body %}
 <div class="container my-5">
-    <h1 class="text-center mb-4">Notre Galerie</h1>
+    <div class="row align-items-center mb-4">
+
+        <div class="col-md-4 text-center text-md-start">
+            <h1 class="mb-2">Notre Galerie</h1>
+            <p class="text-muted mb-0">
+                {{ paintings|length }} tableau(x) trouvé(s)
+            </p>
+        </div>
+
+        <div class="col-md-4">
+            <form action="{{ path('app_gallery') }}" method="GET" style="max-width: 300px; margin: 0 auto;">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Recherche par titre ou auteur ..." value="{{ app.request.query.get('search')}}">
+                    <button type="submit" class="btn btn-outline-dark">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-4">
+            <form action="{{ path('app_gallery') }}" method="GET">
+                <input type="hidden" name="search" value="{{ app.request.query.get('search')}}">
+                <div class="row g-2">
+                    <div class="col-12">
+                        <select name="category" class="form-select form-select-sm">
+                            <option value="">Tous les styles</option>
+                            {% for category in categories%}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <select name="technical" class="form-select form-select-sm">
+                            <option value="">Toutes les techniques</option>
+                            {% for technical in technicals %}
+                                <option value="{{ technical.id }}">{{ technical.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-outline-dark btn-sm">
+                            <i class="bi bi-funnel"></i> Filtrer
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="row g-4">
         {% for painting in paintings %}
         <div class="col-12 col-md-6 col-lg-3">
@@ -12,8 +61,7 @@
                     <h5 class="card-title">{{ painting.title }}</h5>
                     <p class="card-text">
                         <small class="text-muted">
-                            <strong>{{ painting.author}} {{ painting.created|date('Y') }}</strong><br>
-                            {{ painting.technical }}
+                            <strong>{{ painting.author}} {{ painting.created|date('Y') }}</strong>
                         </small>
                     </p>
                     <a href="{{ path('app_tableau_details', {slug: painting.slug}) }}" class="btn btn-outline-dark btn-sm">Voir l'œuvre en détail</a>

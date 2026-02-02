@@ -25,7 +25,10 @@
                         <dd class="col-sm-8">{{ painting.created|date('Y') }}</dd>
                         
                         <dt class="col-sm-4">Style :</dt>
-                        <dd class="col-sm-8">{{ painting.technical }}</dd>
+                        <dd class="col-sm-8">{{ painting.category.name }}</dd>
+
+                        <dt class="col-sm-4">Technique :</dt>
+                        <dd class="col-sm-8">{{ painting.technical.name }}</dd>
                         
                         <dt class="col-sm-4">Dimensions :</dt>
                         <dd class="col-sm-8">{{ painting.height }} * {{ painting.width }} cm</dd>

@@ -111,16 +111,10 @@ class Painting
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-
-    #[ORM\Column(length: 100)]
-    #[Assert\NotBlank(message: 'La technique est obligatoire')]
-    #[Assert\Length(
-        min: 5,
-        max: 100,
-        minMessage: 'La technique doit contenir au minimum {{ limit }} caractères',
-        maxMessage: 'La technique ne peut pas dépasser {{ limit }} caractères'
-    )]
-    private ?string $technical = null;
+    #[Assert\NotNull(message: 'La technique est obligatoire')]
+    #[ORM\ManyToOne(targetEntity: Technical::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Technical $technical = null;
 
 
     #[ORM\Column(length: 255, unique: true)]
@@ -129,6 +123,11 @@ class Painting
 
     #[ORM\Column(type: 'boolean', options: ['default' => true])]
     private ?bool $isVisible = true;
+
+    #[Assert\NotNull(message: 'La catégorie/style est obligatoire')]
+    #[ORM\ManyToOne(targetEntity: Category::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Category $category = null;
 
 
 
@@ -237,12 +236,12 @@ class Painting
     }
 
 
-    public function getTechnical(): ?string
+    public function getTechnical(): ?Technical
     {
         return $this->technical;
     }
 
-    public function setTechnical(string $technical): static
+    public function setTechnical(?Technical $technical): static
     {
         $this->technical = $technical;
 
@@ -279,6 +278,18 @@ class Painting
     public function setIsVisible(bool $isVisible): static
     {
         $this->isVisible = $isVisible;
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
+
         return $this;
     }
 }

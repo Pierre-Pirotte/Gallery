@@ -1,0 +1,71 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+    <section class="container-fluid my-4">
+        <div class="row">
+            <div class="col-12">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="display-6">Gestion des  commentaires :</h3>
+                </div>
+
+                <p class="text-muted mt-3">
+                    <i class="bi bi-info-circle"></i>
+                    Total : {{ comments|length }} commentaires
+                </p>
+
+                {% if comments is empty %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Aucun commentaire trouvé.
+                    </div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Utilisateur</th>
+                                    <th>Tableau</th>
+                                    <th>Commentaire</th>
+                                    <th>Date</th>
+                                    <th class="text-center">Visibilité</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for comment in comments %}
+                                    <tr>
+                                        <td>{{ comment.user.pseudo }}</td>
+                                        <td>
+                                        {{ comment.painting.title }}
+                                        <a href="{{ path('app_tableau_details', {slug: comment.painting.slug}) }}" class="btn btn-sm btn-outline-info ms-2" target="_blank">Voir
+                                        </a>
+                                        </td>
+                                        <td>{{ comment.content|length > 50 ? comment.content|slice(0, 50) ~ '...' : comment.content }}  
+                                        </td>
+                                        <td>{{ comment.createdAt|date('d/m/Y H:i') }}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if comment.isVisible %}
+                                                <span class="badge bg-success">Visible</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Masqué</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ path('admin_comment_toggle', {id: comment.id})}}" class="btn btn-sm {% if comment.isVisible %}btn-secondary{% else %}btn-success{% endif %}" title="{% if comment.isVisible %}Masquer{% else %}Afficher{% endif %}">
+                                                    <i class="bi bi-eye{% if not comment.isVisible %}-slash{% endif %}"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}    
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

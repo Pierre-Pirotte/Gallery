@@ -21,13 +21,18 @@ class CommentAdminController extends AbstractController
     #[Route('', name: 'index')]
     public function index(CommentRepository $commentRepository): Response
     {
-        $comments = $commentRepository->findBy([], ['createdAt' => 'DESC']);
+        // récupere les commentaires non nulls uniquement 
+        $comments = $commentRepository->createQueryBuilder('c')
+        ->where('c.content IS NOT NULL')
+        ->orderBy('c.createdAt', 'DESC')
+        ->getQuery()
+        ->getResult();
         return $this->render('admin/comment/index.html.twig', [
             'comments' => $comments,
         ]);
     }
 
-    // méthode pour la visibilité on/off
+    // méthode pour la visibilité on/off pareil que pour la gestion des tablaux
     #[Route('/{id}/toggle', name: 'toggle', methods: ['GET'])]
     public function toggleVisibility(Comment $comment, EntityManagerInterface $em):Response 
     {

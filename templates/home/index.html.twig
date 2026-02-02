@@ -96,42 +96,78 @@ document.addEventListener('turbo:load', initCarousel);
 document.addEventListener('DOMContentLoaded', initCarousel);
 </script>
 
-<div class="container my-5">
-    <div class="row mb-5">
-        <div class="col-md-6">
-            <h1 class="mb-4">Bienvenue dans notre Galerie d'Art</h1>
-            <p class="lead">
-                Découvrez une collection d'œuvres d'art exceptionnelles. 
-                Notre galerie vous invite à explorer et apprécier des créations uniques.
+<div class="container-fluid my-5">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1 class="display-5 mb-4">Bienvenue dans notre Galerie d'Art</h1>
+            <p class="lead fs-5 px-5 mx-auto" style="max-width: 1200px;">
+                Découvrez une collection d'œuvres d'art exceptionnelles créées par des artistes talentueux du monde entier. 
+                Notre galerie en ligne vous invite à explorer et apprécier des créations uniques où chaque tableau raconte une histoire, 
+                chaque couleur évoque une émotion et chaque coup de pinceau révèle une passion.
+            </p>
+            <p class="fs-6 px-5 mx-auto text-muted" style="max-width: 1200px;">
+                Notre plateforme a été conçue pour rapprocher les amateurs d'art et les créateurs dans un espace convivial et interactif. 
+                En créant un compte gratuit, vous pourrez non seulement parcourir notre vaste collection de tableaux, mais également 
+                participer activement à notre communauté artistique. Exprimez votre opinion en attribuant des notes aux œuvres qui vous touchent, 
+                partagez vos impressions et réflexions à travers des commentaires détaillés, et échangez avec d'autres passionnés d'art. 
+                Chaque avis compte et contribue à mettre en lumière les talents émergents tout en enrichissant l'expérience de tous les visiteurs. 
+                Que vous soyez collectionneur chevronné, artiste en herbe ou simple admirateur de beauté, notre galerie vous offre un espace 
+                d'expression et de découverte où votre voix trouve sa place. Rejoignez-nous dès aujourd'hui et participez à cette aventure 
+                artistique collective où chaque regard compte et chaque commentaire enrichit la conversation autour de l'art.
             </p>
         </div>
-        <div class="col-md-6">
-            <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="height: 300px;">
-                <span class="text-white fs-1">🎨</span>
-            </div>
-        </div>
     </div>
+</div>
 
+<div class="container my-5">
+    <h1 class="display-5 mb-5 text-center">Tableau le mieux noté de la galerie</h1>
+    {% if topRatingPainting %}
     <div class="row">
-        <div class="col-12">
-            <h2 class="text-center mb-4">Œuvre la mieux notée</h2>
-        </div>
-        <div class="col-md-6 mx-auto">
-            <div class="card">
-                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
-                    <span class="fs-1">🖼️</span>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Titre de l'Œuvre</h5>
-                    <p class="card-text"><strong>Artiste :</strong> Nom de l'artiste</p>
-                    <p class="card-text"><strong>Année :</strong> 2024</p>
-                    <p class="card-text">
-                        Description de l'œuvre. Cette peinture représente...
-                    </p>
-                    <a href="#" class="btn btn-primary">Voir les détails</a>
+            <div class="col-lg-7 mb-4">
+                <img src="{{ asset('images/paintings/' ~ topRatingPainting.image) }}" 
+                 class="img-fluid rounded shadow-lg" 
+                 alt="{{ topRatingPainting.title }}"
+                 style="width: 100%; max-height: 700px; object-fit: contain;">
+            </div>
+        
+            <div class="col-lg-5">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-dark text-white">
+                        <h3 class="mb-0">{{ topRatingPainting.title }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="text-muted mb-4">{{ topRatingPainting.author }}</h5>
+                    
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4">Année :</dt>
+                            <dd class="col-sm-8">{{ topRatingPainting.created|date('Y') }}</dd>
+
+                            <dt class="col-sm-4">Style :</dt>
+                            <dd class="col-sm-8">{{ topRatingPainting.category.name }}</dd>
+
+                            <dt class="col-sm-4">Technique :</dt>
+                            <dd class="col-sm-8">{{ topRatingPainting.technical.name }}</dd>
+
+                            <dt class="col-sm-4">Dimensions :</dt>
+                            <dd class="col-sm-8">{{ topRatingPainting.height }} * {{ topRatingPainting.width }} cm</dd>
+                        
+                            <dt class="col-sm-12 mt-3 mb-2">Description :</dt>
+                            <dd class="col-sm-12 text-muted">{{ topRatingPainting.description }}</dd>
+
+                            <dt class="col-sm-4">Note moyenne :</dt>
+                            <dd class="col-sm-8">
+                                <span class="">{{ bestRating }}/10</span>
+                            </dd>
+
+                        </dl>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+        {% else %}
+            <div class="alert alert-info text-center">
+            <p class="mb-0">Aucun tableau n'a encore été noté.</p>
+            </div>
+        {% endif %}
 </div>
 {% endblock %}

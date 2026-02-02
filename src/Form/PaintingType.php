@@ -3,6 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Painting;
+use App\Entity\Technical;
+use App\Entity\Category;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\AbstractType;
@@ -65,14 +68,22 @@ class PaintingType extends AbstractType
                 ]
             ])
 
-            ->add('technical', TextType::class, [
+            ->add('technical', EntityType::class, [
                 'label'=> 'Technique :',
-                'attr' => [
-                    'placeholder' => 'Ex: Huile sur toile',
-                    'maxlength'=> 100,
-                    'minlength'=> 5
-                ]
+                'class'=> Technical::class,
+                'choice_label'=> 'name',
+                'placeholder' => 'Sélectionnez une technique',
+                'attr' => ['class' => 'form-select']
             ])
+
+            ->add('category', EntityType::class, [
+                'label'=> 'Catégorie/Style :',
+                'class'=> Category::class,
+                'choice_label'=> 'name',
+                'placeholder' => 'Sélectionnez une catégorie/style',
+                'attr' => ['class' => 'form-select']
+            ])
+
 
             ->add('imageFile', VichFileType::class, [
                 'required' => !$isEdit,
